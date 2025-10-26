@@ -14,7 +14,7 @@
 /.next/
 /out/
 .swc
-
+/aws-elastic-beanstalk-cli-setup/
 # production
 /build
 
