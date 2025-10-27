@@ -1,0 +1,20 @@
+name: CI.yml
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group:
+    ${{github.workflow}}-${{github.event.pull_request.number}}
+  cancel-in-progress: true
+
+
+jobs:
+  calling-check-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/test.yml
+        secrets: inherit
+
+
