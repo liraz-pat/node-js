@@ -1,0 +1,5 @@
+* @liraz89
+*.js @liraz89
+*.ts @liraz89
+*.tsx @liraz89
+/e2e/ @liraz89
