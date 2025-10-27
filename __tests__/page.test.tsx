@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+mport { render, screen } from "@testing-library/react";
 import Home from "../src/app/page";
 import "@testing-library/jest-dom";
 
