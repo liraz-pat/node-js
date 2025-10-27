@@ -29,6 +29,7 @@ jobs:
         with:
           name: build
           path: .next/
+          include-hidden-files: true
       - name: Run Unit Tests
         run: npm run test
       - uses: actions/upload-artifact@v4
