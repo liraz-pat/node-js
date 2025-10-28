@@ -78,14 +78,7 @@ jobs:
           echo "aws_env=$aws_env" >> "$GITHUB_OUTPUT"
       - name: Get AWS ENV Status
         id: get-env-status
-        run: |
-          aws_env_status=$(aws elasticbeanstalk describe-environments \
-         --application-name "
-          nexjs-starter" \
-         --environment-names "gha-course-staging" \
-         --query 'Environments[0].Status' \
-         --output text)
-         echo "aws_env_status=$aws_env_status" >> "$GITHUB_OUTPUT"
+        run: echo "aws_env_status=$(aws elasticbeanstalk describe-environments --application-name ${{vars.AWS_EB_APP_NAME}} --environment-names ${{ inputs.aws-env}} --query "Environments[0].Status" --output text)" >> $GITHUB_OUTPUT
       - name: Initialize EB
         run: eb init ${{vars.AWS_EB_APP_NAME}} --platform ${{vars.AWS_EB_PLATFORM}} --region ${{vars.AWS_REGION}}
       - name: Create a New Environment
