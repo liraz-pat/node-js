@@ -94,7 +94,7 @@ jobs:
       - name: Initialize EB
         shell: bash
         run: |
-          yes "n" | eb init "${{ vars.AWS_EB_APP_NAME }}" \
+          eb init "${{ vars.AWS_EB_APP_NAME }}" \
             --platform "${{ vars.AWS_EB_PLATFORM }}" \
             --region "${{ vars.AWS_REGION }}"
       - name: Create a New Environment
