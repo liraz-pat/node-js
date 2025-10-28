@@ -81,13 +81,13 @@ jobs:
         run: |
           aws_env_status=$(aws elasticbeanstalk describe-environments \
             --application-name "${{ vars.AWS_EB_APP_NAME }}" \
-            --environment-names "${{ inputs['aws-env'] }}" \
+            --environment-names "${{ inputs.aws-env }}" \
             --query 'Environments[0].Status' \
             --output text)
           echo "aws_env_status=$aws_env_status" >> "$GITHUB_OUTPUT"
       - name: Initialize EB
         run: |
-          yes "n" | eb init \
+          eb init \
          --application "${{ vars.AWS_EB_APP_NAME }}" \
          --platform "${{ vars.AWS_EB_PLATFORM }}" \
          --region "${{ vars.AWS_REGION }}"
