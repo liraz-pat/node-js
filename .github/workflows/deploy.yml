@@ -69,23 +69,34 @@ jobs:
         run: pip install awsebcli
       - name: Get AWS ENV Name
         id: get-env-name
-        run: echo "aws_env=$(aws elasticbeanstalk describe-environments --application-name ${{vars.AWS_EB_APP_NAME}} --environment-names ${{ inputs.aws-env}} --query "Environments[0].EnvironmentName" --output text)" >> $GITHUB_OUTPUT
+        shell: bash
+        run: |
+          set -euo pipefail
+          app="${{ vars.AWS_EB_APP_NAME }}"
+          env_name="${{ inputs['aws-env'] }}"
+          name=$(aws elasticbeanstalk describe-environments \
+            --application-name "$app" \
+            --environment-names "$env_name" \
+            --query 'Environments[0].EnvironmentName' \
+            --output text)
+          echo "aws_env=$name" >> "$GITHUB_OUTPUT"
       - name: Get AWS ENV Status
         id: get-env-status
+        shell: bash
         run: |
-          aws_env_status=$(aws elasticbeanstalk describe-environments \
-              --application-name "	
-            nexjs-starter" \
-              --environment-names "gha-course-staging" \
-              --query "Environments[0].Status" \
-              --output text)
-            echo "aws_env_status=$aws_env_status" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          status=$(aws elasticbeanstalk describe-environments \
+            --application-name "${{ vars.AWS_EB_APP_NAME }}" \
+            --environment-names "${{ inputs['aws-env'] }}" \
+            --query 'Environments[0].Status' \
+            --output text)
+          echo "aws_env_status=$status" >> "$GITHUB_OUTPUT"
       - name: Initialize EB
+        shell: bash
         run: |
-          yes "n" | eb init \
-                --application "${{ vars.AWS_EB_APP_NAME }}" \
-                --platform "${{ vars.AWS_EB_PLATFORM }}" \
-                --region "${{ vars.AWS_REGION }}"
+          yes "n" | eb init "${{ vars.AWS_EB_APP_NAME }}" \
+            --platform "${{ vars.AWS_EB_PLATFORM }}" \
+            --region "${{ vars.AWS_REGION }}"
       - name: Create a New Environment
         if: ${{ steps.get-env-name.outputs.aws_env == 'None' || steps.get-env-status.outputs.aws_env_status == 'Terminated' }}
         run: |
