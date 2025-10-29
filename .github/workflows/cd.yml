@@ -61,18 +61,18 @@ jobs:
   run-tests:
     needs: create-version-pr-or-release
     if: needs.create-version-pr-or-release.outputs.should-deploy == 'true'
-    uses: ./.github/workflows/test.yaml
+    uses: ./.github/workflows/test.yml
     secrets: inherit
   deploy-to-staging:
     needs: run-tests
-    uses: ./.github/workflows/deploy.yaml
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       aws-env: ${{vars.AWS_EB_STAGING_ENV}}
       github-env: "staging"
   deploy-to-production:
     needs: run-tests
-    uses: ./.github/workflows/deploy.yaml
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       aws-env: ${{vars.AWS_EB_PRODUCTION_ENV}}
