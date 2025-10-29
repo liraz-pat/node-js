@@ -8,7 +8,9 @@ concurrency:
   group: ${{github.workflow}}-${{github.ref}}
   cancel-in-progress: true
 jobs:
-  create-version-pr-or-realise:
+  create-version-pr-or-release:
+    outputs:
+      should-deploy: ${{steps.changesets.outputs.hasChangesets == 'false'}}
     permissions:
       contents: write
       pull-requests: write
@@ -30,7 +32,7 @@ jobs:
         id: changeset
         uses: changesets/action@v1
         with:
-          publish: npx changesets tag
+          publish: npx changeset tag
         env:
           GITHUB_TOKEN: ${{secrets.changesets_key}}
       - run: echo "${{toJSON(steps.changeset.outputs)}}"
@@ -56,6 +58,25 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
+  run-tests:
+    needs: create-version-pr-or-release
+    if: needs.create-version-pr-or-release.outputs.should-deploy == 'true'
+    uses: ./.github/workflows/test.yaml
+    secrets: inherit
+  deploy-to-staging:
+    needs: run-tests
+    uses: ./.github/workflows/deploy.yaml
+    secrets: inherit
+    with:
+      aws-env: ${{vars.AWS_EB_STAGING_ENV}}
+      github-env: "staging"
+  deploy-to-production:
+    needs: run-tests
+    uses: ./.github/workflows/deploy.yaml
+    secrets: inherit
+    with:
+      aws-env: ${{vars.AWS_EB_PRODUCTION_ENV}}
+      github-env: "production"
 
 
 
