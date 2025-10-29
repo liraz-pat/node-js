@@ -10,7 +10,7 @@ concurrency:
 jobs:
   create-version-pr-or-release:
     outputs:
-      should-deploy: ${{steps.changesets.outputs.hasChangesets == 'false'}}
+      should-deploy: ${{ !fromJSON(steps.changeset.outputs.hasChangesets) }}
     permissions:
       contents: write
       pull-requests: write
