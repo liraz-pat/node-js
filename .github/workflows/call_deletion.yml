@@ -9,7 +9,11 @@ jobs:
     permissions:
       actions: write
       contents: read
-    if: github.event.issue.pull_request && github.event.issue.state == 'open' && github.event.comment.body == '/destroy'
+      pull-requests: write
+    if: >
+      github.event.issue.pull_request &&
+      github.event.issue.state == 'open' &&
+      github.event.comment.body == '/destroy'
     steps:
       - name: Get Pull Request Head Ref
         id: get-head-ref
@@ -18,28 +22,20 @@ jobs:
           result-encoding: string
           script: |
             const response = await github.rest.pulls.get({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.issue.number
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
             });
-            console.log(response.data)
-            return response.data.head.ref
-#  get-env-values:
-#    outputs:
-#      aws-env: ${{needs../.github/workflows/deploy.yml.outputs.aws-env}}
-#      github-env: ${{needs../.github/workflows/deploy.yml.outputs.github-env}}
-#    needs: ./.github/workflows/deploy.yml
-
+            console.log(response.data);
+            return response.data.head.ref;
 
   call-delete-workflow:
-  needs: trigger-pr-branch-deletion
-  # run ONLY if the 1st job actually ran
-  if: needs.trigger-pr-branch-deletion.result == 'success'
-  uses: ./.github/workflows/destroy.yml
-  with:
-    # hard-coded for now, like you wanted
-    aws-env: github-actions-course-demo-pr-23
-    github-env: staging
-    report-pr: ${{ github.event.issue.number }}
-  secrets: inherit
-
+    # 👆 this is a NEW JOB, same indent as trigger-pr-branch-deletion
+    needs: trigger-pr-branch-deletion
+    if: needs.trigger-pr-branch-deletion.result == 'success'
+    uses: ./.github/workflows/destroy.yml
+    with:
+      aws-env: github-actions-course-demo-pr-23   # hard-coded for testing
+      github-env: staging
+      report-pr: ${{ github.event.issue.number }}
+    secrets: inherit
