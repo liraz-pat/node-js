@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: write
+      contents: read
     if: github.event.issue.pull_request && github.event.issue.state == 'open' && github.event.comment.body == '/deploy'
     steps:
       - name: Get Pull Request Head Ref
@@ -16,7 +17,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const response = await github.action.pulls.get({
+            const response = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: context.issue.number
@@ -27,10 +28,10 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const response = await github.action.actions.createWorkflowDispatch({
+            const response = await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: "deploy.yaml",
+              workflow_id: "deploy.yml",
               ref: "${{ steps.get-head-ref.outputs.result }}",
               inputs: {
                 "aws-env": `github-actions-course-demo-pr-${context.issue.number}`,
