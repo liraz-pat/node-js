@@ -31,7 +31,7 @@ jobs:
 #    needs: ./.github/workflows/deploy.yml
 
 
- call-delete-workflow:
+  call-delete-workflow:
   needs: trigger-pr-branch-deletion
   # run ONLY if the 1st job actually ran
   if: needs.trigger-pr-branch-deletion.result == 'success'
