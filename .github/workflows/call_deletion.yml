@@ -33,7 +33,7 @@ jobs:
     # 👆 this is a NEW JOB, same indent as trigger-pr-branch-deletion
     needs: trigger-pr-branch-deletion
     if: needs.trigger-pr-branch-deletion.result == 'success'
-    uses: ./.github/workflows/destroy.yml
+    uses: ./.github/workflows/destroy-env.yml
     with:
       aws-env: github-actions-course-demo-pr-23   # hard-coded for testing
       github-env: staging
